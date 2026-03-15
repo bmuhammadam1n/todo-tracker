@@ -177,7 +177,7 @@ This structure separates the project into clear domains:
 
 ```
 git clone https://github.com/bmuhammadam1n/todo-tracker.git
-cd django-todo-tracker
+cd todo-tracker
 ```
 
 ---
