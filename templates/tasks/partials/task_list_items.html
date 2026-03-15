@@ -1,0 +1,11 @@
+<!-- templates/tasks/partials/task_list_items.html -->
+{% for task in tasks %}
+    {% include 'tasks/partials/task_item.html' with task=task %}
+{% empty %}
+    <div class="bg-white p-8 rounded-lg shadow text-center text-gray-500">
+        <p class="text-lg">No tasks yet.</p>
+        <a href="{% url 'task_create' %}" class="text-indigo-600 hover:underline mt-2 inline-block">
+            Create your first task →
+        </a>
+    </div>
+{% endfor %}

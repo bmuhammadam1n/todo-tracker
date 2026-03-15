@@ -1,0 +1,178 @@
+<!-- templates/analytics/analytics_dashboard.html -->
+{% extends 'base.html' %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">📊 Analytics Dashboard</h1>
+    <p class="text-gray-600 mt-1">Track your productivity over time</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <!-- Total Completed -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Completed</p>
+                <p class="text-2xl font-bold text-green-600">{{ total_completed }}</p>
+            </div>
+            <div class="bg-green-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Total Created -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Total Created</p>
+                <p class="text-2xl font-bold text-indigo-600">{{ total_created }}</p>
+            </div>
+            <div class="bg-indigo-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Weekly Average -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Weekly Avg</p>
+                <p class="text-2xl font-bold text-blue-600">{{ weekly_avg|floatformat:0 }}%</p>
+            </div>
+            <div class="bg-blue-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Current Streak -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-500">Current Streak</p>
+                <p class="text-2xl font-bold text-orange-600">{{ streak }} days</p>
+            </div>
+            <div class="bg-orange-100 p-3 rounded-full">
+                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Chart -->
+<div class="bg-white p-6 rounded-lg shadow mb-8">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">📈 Progress Trend (Last 30 Days)</h2>
+    <canvas id="progressChart" height="100"></canvas>
+</div>
+
+<!-- Best Day & Monthly Stats -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Add this after the Best Day & Monthly Stats grid -->
+
+<!-- Contribution Heatmap -->
+<div class="mt-8">
+    {% include 'analytics/heatmap.html' %}
+</div>
+    <!-- Best Day -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">🏆 Best Day</h2>
+        {% if best_day %}
+            <div class="text-center">
+                <p class="text-4xl font-bold text-indigo-600">100%</p>
+                <p class="text-gray-600 mt-2">{{ best_day.date|date:"l, F j, Y" }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ best_day.completed_tasks }} / {{ best_day.total_tasks }} tasks completed</p>
+            </div>
+        {% else %}
+            <p class="text-gray-500 text-center">Keep going! Complete all tasks in a day to see your best day here.</p>
+        {% endif %}
+    </div>
+    
+    <!-- Monthly Average -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">📅 Monthly Average</h2>
+        <div class="text-center">
+            <p class="text-4xl font-bold text-purple-600">{{ monthly_avg|floatformat:0 }}%</p>
+            <p class="text-gray-600 mt-2">Average completion rate over last 30 days</p>
+            <div class="mt-4 w-full bg-gray-200 rounded-full h-3">
+                <div class="bg-purple-600 h-3 rounded-full" style="width: {{ monthly_avg }}%"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Configuration -->
+<script>
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    
+    // Prepare data from Django
+    const progressData = {{ progress_data|safe }};
+    
+    const labels = progressData.map(item => item.date);
+    const data = progressData.map(item => item.progress);
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Daily Progress (%)',
+                data: data,
+                borderColor: 'rgb(99, 102, 241)',
+                backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                borderWidth: 2,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + '% completion';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

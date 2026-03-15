@@ -1,0 +1,97 @@
+<!-- templates/analytics/history.html -->
+{% extends 'base.html' %}
+
+{% block title %}History{% endblock %}
+
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">📅 History</h1>
+    <p class="text-gray-600 mt-1">View your past progress</p>
+</div>
+
+<!-- Quick Date Navigation -->
+<div class="bg-white p-4 rounded-lg shadow mb-6">
+    <h3 class="font-bold text-gray-800 mb-3">Quick Navigation</h3>
+    <div class="flex flex-wrap gap-2">
+        {% for day in last_7_days %}
+            <a href="?date={{ day }}" 
+               class="px-4 py-2 rounded-lg text-sm font-medium transition
+               {% if day == today %}bg-indigo-600 text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                {{ day|date:"M d" }}
+            </a>
+        {% endfor %}
+    </div>
+    
+    <!-- Date Picker -->
+    <div class="mt-4">
+        <form method="get" class="flex gap-2">
+            <input type="date" name="date" value="{{ selected_date }}" 
+                   class="border rounded px-3 py-2 focus:outline-none focus:border-indigo-500">
+            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+                Go
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Selected Date Progress -->
+<div class="bg-white p-6 rounded-lg shadow mb-6">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">
+        📊 {{ selected_date|date:"l, F j, Y" }}
+    </h2>
+    
+    {% if daily_progress %}
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+                <p class="text-sm text-gray-600">Completed</p>
+                <p class="text-2xl font-bold text-green-600">{{ daily_progress.completed_tasks }}</p>
+            </div>
+            <div class="text-center p-4 bg-orange-50 rounded-lg">
+                <p class="text-sm text-gray-600">Total</p>
+                <p class="text-2xl font-bold text-orange-600">{{ daily_progress.total_tasks }}</p>
+            </div>
+            <div class="text-center p-4 bg-indigo-50 rounded-lg">
+                <p class="text-sm text-gray-600">Progress</p>
+                <p class="text-2xl font-bold text-indigo-600">{{ daily_progress.progress_percentage|floatformat:0 }}%</p>
+            </div>
+        </div>
+        
+        <!-- Progress Bar -->
+        <div class="mt-4">
+            <div class="w-full bg-gray-200 rounded-full h-4">
+                <div class="bg-indigo-600 h-4 rounded-full transition-all" 
+                     style="width: {{ daily_progress.progress_percentage }}%"></div>
+            </div>
+        </div>
+    {% else %}
+        <p class="text-gray-500 text-center py-8">No progress recorded for this date.</p>
+    {% endif %}
+</div>
+
+<!-- Tasks on Selected Date -->
+<div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">📋 Tasks Created on This Date</h2>
+    
+    {% if tasks_on_date %}
+        <div class="space-y-2">
+            {% for task in tasks_on_date %}
+                <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <input type="checkbox" disabled {% if task.completed %}checked{% endif %}
+                           class="w-5 h-5 text-indigo-600 rounded">
+                    <span class="{% if task.completed %}line-through text-gray-400{% else %}text-gray-800{% endif %}">
+                        {{ task.title }}
+                    </span>
+                    <span class="ml-auto text-xs px-2 py-1 rounded-full
+                        {% if task.priority == 'high' %}bg-red-100 text-red-700
+                        {% elif task.priority == 'medium' %}bg-yellow-100 text-yellow-700
+                        {% else %}bg-green-100 text-green-700{% endif %}">
+                        {{ task.get_priority_display }}
+                    </span>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-gray-500 text-center py-8">No tasks were created on this date.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+<!-- templates/tasks/partials/task_item.html -->
+<div id="task-{{ task.id }}" 
+     class="bg-white p-4 rounded-lg shadow hover:shadow-md transition group">
+    
+    <div class="flex items-start gap-3">
+        <!-- Checkbox with HTMX -->
+        <div class="pt-1">
+            {% include 'tasks/partials/task_checkbox.html' with task=task %}
+        </div>
+        
+        <!-- Task Content -->
+        <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2">
+                <h3 class="font-medium text-gray-800 {% if task.completed %}line-through text-gray-400{% endif %}">
+                    {{ task.title }}
+                </h3>
+                <!-- Priority Badge -->
+                <span class="px-2 py-0.5 text-xs rounded-full font-medium
+                    {% if task.priority == 'high' %}bg-red-100 text-red-700
+                    {% elif task.priority == 'medium' %}bg-yellow-100 text-yellow-700
+                    {% else %}bg-green-100 text-green-700{% endif %}">
+                    {{ task.get_priority_display }}
+                </span>
+            </div>
+            
+            {% if task.description %}
+                <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ task.description }}</p>
+            {% endif %}
+            
+            {% if task.due_date %}
+                <p class="text-xs text-gray-400 mt-2">
+                    Due: {{ task.due_date|date:"M d, Y" }}
+                </p>
+            {% endif %}
+        </div>
+        
+        <!-- Actions (show on hover) -->
+        <div class="opacity-0 group-hover:opacity-100 transition flex gap-2">
+            <a href="{% url 'task_edit' task.id %}" 
+               class="text-indigo-600 hover:text-indigo-800 text-sm">Edit</a>
+            <a href="{% url 'task_delete' task.id %}" 
+               class="text-red-600 hover:text-red-800 text-sm">Delete</a>
+        </div>
+    </div>
+</div>

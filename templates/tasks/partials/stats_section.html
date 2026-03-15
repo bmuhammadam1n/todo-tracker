@@ -1,0 +1,30 @@
+<!-- templates/tasks/partials/stats_section.html -->
+<div class="bg-white p-4 rounded-lg shadow">
+    <h3 class="font-bold text-gray-800 mb-3">📊 Today's Stats</h3>
+    <div class="space-y-3 text-sm">
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">Total Tasks</span>
+            <span class="font-bold text-lg">{{ daily_progress.total_tasks }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">✅ Completed</span>
+            <span class="font-bold text-green-600">{{ daily_progress.completed_tasks }}</span>
+        </div>
+        <div class="flex justify-between items-center">
+            <span class="text-gray-600">⏳ Pending</span>
+            <span class="font-bold text-orange-600">{{ daily_progress.total_tasks|minus:daily_progress.completed_tasks }}</span>
+        </div>
+    </div>
+    
+    <!-- Mini Progress Bar -->
+    <div class="mt-4 pt-4 border-t">
+        <div class="flex justify-between text-xs text-gray-500 mb-2">
+            <span>Completion Rate</span>
+            <span class="font-medium">{{ daily_progress.progress_percentage|floatformat:0 }}%</span>
+        </div>
+        <div class="w-full bg-gray-100 rounded-full h-2">
+            <div class="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                 style="width: {{ daily_progress.progress_percentage }}%"></div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+<!-- templates/accounts/register.html -->
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-8 rounded-lg shadow-md mt-10">
+    <h2 class="text-2xl font-bold mb-6 text-center text-gray-800">Create Account</h2>
+    
+    <form method="post">
+        {% csrf_token %}
+        <div class="space-y-4">
+            {{ form.as_p }}
+        </div>
+        <button type="submit" class="mt-6 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded w-full transition duration-200">
+            Register
+        </button>
+    </form>
+    
+    <p class="mt-4 text-center text-sm text-gray-600">
+        Already have an account? 
+        <a href="{% url 'login' %}" class="text-indigo-600 hover:underline font-medium">Login</a>
+    </p>
+</div>
+{% endblock %}

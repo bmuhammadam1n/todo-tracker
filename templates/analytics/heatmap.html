@@ -1,0 +1,97 @@
+<!-- templates/analytics/heatmap.html -->
+<div class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-bold text-gray-800 mb-4">🔥 Contribution Heatmap</h2>
+    <p class="text-sm text-gray-500 mb-4">Last 365 days of activity</p>
+    
+    <!-- Heatmap Container -->
+    <div id="heatmap-container" class="overflow-x-auto">
+        <div class="flex gap-1" id="heatmap-weeks">
+            <!-- Weeks will be injected by JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Legend -->
+    <div class="flex items-center gap-2 mt-4 text-xs text-gray-500">
+        <span>Less</span>
+        <div class="w-3 h-3 rounded bg-gray-100 border border-gray-200"></div>
+        <div class="w-3 h-3 rounded bg-green-100"></div>
+        <div class="w-3 h-3 rounded bg-green-300"></div>
+        <div class="w-3 h-3 rounded bg-green-500"></div>
+        <div class="w-3 h-3 rounded bg-green-700"></div>
+        <span>More</span>
+    </div>
+    
+    <!-- Tooltip -->
+    <div id="heatmap-tooltip" class="hidden absolute bg-gray-800 text-white text-xs p-2 rounded pointer-events-none z-10">
+    </div>
+</div>
+
+<script>
+async function loadHeatmap() {
+    const response = await fetch('{% url "heatmap_data" %}');
+    const data = await response.json();
+    renderHeatmap(data.heatmap);
+}
+
+function renderHeatmap(heatmapData) {
+    const container = document.getElementById('heatmap-weeks');
+    const tooltip = document.getElementById('heatmap-tooltip');
+    
+    // Group by weeks (7 days per week)
+    const weeks = [];
+    for (let i = 0; i < heatmapData.length; i += 7) {
+        weeks.push(heatmapData.slice(i, i + 7));
+    }
+    
+    // Color levels
+    const colors = [
+        'bg-gray-100 border border-gray-200',  // Level 0
+        'bg-green-100',  // Level 1
+        'bg-green-300',  // Level 2
+        'bg-green-500',  // Level 3
+        'bg-green-700',  // Level 4
+    ];
+    
+    // Render each week column
+    weeks.forEach((week, weekIndex) => {
+        const weekDiv = document.createElement('div');
+        weekDiv.className = 'flex flex-col gap-1';
+        
+        week.forEach((day, dayIndex) => {
+            const dayDiv = document.createElement('div');
+            dayDiv.className = `w-3 h-3 rounded ${colors[day.level]} cursor-pointer`;
+            dayDiv.dataset.date = day.date;
+            dayDiv.dataset.progress = day.progress;
+            dayDiv.dataset.count = day.count;
+            
+            // Tooltip on hover
+            dayDiv.addEventListener('mouseenter', (e) => {
+                const date = new Date(day.date).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric'
+                });
+                tooltip.innerHTML = `
+                    <strong>${date}</strong><br>
+                    ${day.count} tasks completed<br>
+                    ${day.progress.toFixed(0)}% progress
+                `;
+                tooltip.classList.remove('hidden');
+                tooltip.style.left = e.pageX + 10 + 'px';
+                tooltip.style.top = e.pageY + 10 + 'px';
+            });
+            
+            dayDiv.addEventListener('mouseleave', () => {
+                tooltip.classList.add('hidden');
+            });
+            
+            weekDiv.appendChild(dayDiv);
+        });
+        
+        container.appendChild(weekDiv);
+    });
+}
+
+// Load heatmap when page loads
+document.addEventListener('DOMContentLoaded', loadHeatmap);
+</script>

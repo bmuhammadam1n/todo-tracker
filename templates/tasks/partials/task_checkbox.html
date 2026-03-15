@@ -1,0 +1,9 @@
+<!-- templates/tasks/partials/task_checkbox.html -->
+<input type="checkbox"
+       {% if task.completed %}checked{% endif %}
+       hx-post="{% url 'task_toggle' task.id %}"
+       hx-trigger="change"
+       hx-target="#task-list-container, #progress-section, #stats-section"
+       hx-swap="outerHTML"
+       hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+       class="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500 cursor-pointer">
