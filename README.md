@@ -140,9 +140,9 @@ This structure separates the project into clear domains:
 > ⚠️ **Note**: Free Render instances spin down after 15 minutes of inactivity. The first load may take ~30 seconds to wake up.
 
 ### 🔑 Demo Credentials
-| Username | Password | Access |
-|----------|----------|--------|
-| `admin` | `admin123` | Admin panel access |
+| Username | Password | 
+|----------|----------|
+| `admin` | `admin123` | 
 
 ---
 
