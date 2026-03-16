@@ -1,0 +1,16 @@
+# .renderignore
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+ENV/
+.db.sqlite3
+media/
+staticfiles/
+.vscode/
+.idea/
+.DS_Store
+*.log

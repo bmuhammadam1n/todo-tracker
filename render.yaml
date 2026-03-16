@@ -1,0 +1,29 @@
+# render.yaml
+services:
+  - type: web
+    name: todo-tracker
+    env: python
+    region: oregon
+    plan: free
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+    database:
+      name: todo-tracker-db
+      databaseName: todotracker
+      user: todotracker
+
+  - type: worker
+    name: todo-tracker-worker
+    env: python
+    buildCommand: "./build.sh"
+    startCommand: "python manage.py runworker"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
