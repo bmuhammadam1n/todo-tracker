@@ -16,11 +16,11 @@ from pathlib import Path
 if os.environ.get('RENDER', '').lower() == 'true':
     try:
         from .settings_prod import *
-        print("✅ Loaded production settings")
-    except ImportError as e:
-        print(f"⚠️ Could not load production settings: {e}")
-        print("⚠️ Falling back to development settings")
-
+        print("✅ Loaded production settings for Render")
+    except Exception as e:
+        print(f"❌ Error loading production settings: {e}")
+        # Don't fall back to dev settings in production - let it fail visibly
+        raise
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
