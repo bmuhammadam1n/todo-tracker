@@ -17,6 +17,6 @@ python manage.py migrate
 
 # Create superuser for demo (optional)
 echo "👤 Creating demo superuser..."
-python create_superuser.py || echo "⚠️ Superuser creation skipped (may already exist)"
+python create_superuser.py || echo "⚠️ Superuser creation skipped"
 
 echo "✅ Build completed successfully!"
