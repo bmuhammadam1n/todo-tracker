@@ -133,6 +133,17 @@ This structure separates the project into clear domains:
 * **analytics** → productivity tracking
 * **core** → shared logic
 
+## 🌐 Live Demo
+
+### ✨ Try it now: [https://todo-tracker-w2xw.onrender.com/dashboard/](https://todo-tracker-w2xw.onrender.com/dashboard/)
+
+> ⚠️ **Note**: Free Render instances spin down after 15 minutes of inactivity. The first load may take ~30 seconds to wake up.
+
+### 🔑 Demo Credentials
+| Username | Password | Access |
+|----------|----------|--------|
+| `admin` | `admin123` | Admin panel access |
+
 ---
 
 # 📸 Screenshots

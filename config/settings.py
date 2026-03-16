@@ -189,7 +189,8 @@ if os.environ.get('RENDER', '').lower() == 'true':
     ]
     
     # HTMX needs CSRF cookie accessible to JavaScript
-    CSRF_COOKIE_HTTPONLY = False
+    CSRF_COOKIE_SECURE = True
+    CSRF_COOKIE_HTTPONLY = False 
     
     # Logging for debugging
     LOGGING = {
