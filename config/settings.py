@@ -12,12 +12,14 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 import os
 from pathlib import Path
 
-# Check if running on Render
-if os.environ.get('RENDER', False):
-    from .settings_prod import *
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Check if running on Render (production)
+if os.environ.get('RENDER', '').lower() == 'true':
+    try:
+        from .settings_prod import *
+        print("✅ Loaded production settings")
+    except ImportError as e:
+        print(f"⚠️ Could not load production settings: {e}")
+        print("⚠️ Falling back to development settings")
 
 
 # Quick-start development settings - unsuitable for production
